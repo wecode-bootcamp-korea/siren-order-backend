@@ -1,15 +1,15 @@
 from django.db import models
 
 class City(models.Model):
-    city_code = models.IntegerField(max_length=3)
+    city_code = models.CharField(max_length=3)
     city_name = models.CharField(max_length=50)
 
     class META:
         db_table = "city"
 
 class Gungu(models.Model):
-    gungu_code = models.IntegerField(max_length=5)
-    gungu_name = models.CharField(max_length=50)
+    gungu_code = models.CharField(max_length=5)
+    gungu_name = models.CharField(max_length=50, null=True)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
     
     class META:

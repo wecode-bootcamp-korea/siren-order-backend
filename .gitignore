@@ -106,5 +106,8 @@ venv.bak/
 #settings
 my_settings.py
 
+#crawler
+starbucks.py
+
 #swap
 *.swp
