@@ -1,23 +1,23 @@
 from django.db import models
 
 class City(models.Model):
-    city_code = models.CharField(max_length=3)
-    city_name = models.CharField(max_length=50)
+    code = models.CharField(max_length=3)
+    name = models.CharField(max_length=50)
 
-    class META:
+    class Meta:
         db_table = "city"
 
 class Gungu(models.Model):
-    gungu_code = models.CharField(max_length=5)
-    gungu_name = models.CharField(max_length=50, null=True)
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    code = models.CharField(max_length=5)
+    name = models.CharField(max_length=50, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     
-    class META:
+    class Meta:
         db_table = "gungu"
 
 class Store(models.Model):
-    city = models.ForeignKey(City, on_delete=models.CASCADE)
-    gungu = models.ForeignKey(Gungu, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    gungu = models.ForeignKey(Gungu, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=200)
     telephone = models.CharField(max_length=20)
@@ -26,5 +26,5 @@ class Store(models.Model):
     lat = models.DecimalField(max_digits=13,decimal_places=10)
     lng = models.DecimalField(max_digits=13,decimal_places=10)
 
-    class META:
+    class Meta:
         db_table = "store"
