@@ -109,6 +109,10 @@ my_settings.py
 
 #crawler
 starbucks.py
-
+food.py
+drink.py
+stuff.py
+hot.py
+cake.py
 #swap
 *.swp
