@@ -3,19 +3,20 @@ import bcrypt
 import jwt
 import my_settings
 
-from django.shortcuts import render
 from account.models   import User, Social, Login
 from django.views     import View
 from django.http      import JsonResponse
 from datetime         import datetime
-
 
 class AccountView(View):
     def post(self, request):
         new_user_info = json.loads(request.body)
 
         if User.objects.filter(email = new_user_info['email']).exists():
-            return JsonResponse({'message' : 'JOINED_EMAIL'}, status = 400)
+            return JsonResponse({'message' : 'DUPLICATE_EMAIL'}, status = 400)
+
+        if User.objects.filter(phone_number = new_user_info['phone_number']).exists():
+            return JsonResponse({'message' : 'DUPLICATE_PHONE_NUMBER'}, status = 400)
 
         bytes_pw  = bytes(new_user_info['password'], 'utf-8')
         hashed_pw = bcrypt.hashpw(bytes_pw, bcrypt.gensalt())
@@ -30,22 +31,26 @@ class AccountView(View):
 
         return JsonResponse({'message':'SUCCESS'}, status=200)
 
-# class LoginView(View):
-#     def post(self, request):
-#         login_user_info = json.loads(request.body)
+class LoginView(View):
+    def post(self, request):
+        login_user_info = json.loads(request.body)
 
-#         if not User.objects.filter(email=login_user_info['email']).exists:
-#             return JsonResponse({'message' : 'UNKNOWN_EMAIL'}, status=400)
+        try:
+            user = User.objects.get(email=login_user_info['email'])
+        except User.DoesNotExist:
+            return JsonResponse({'message' : 'INVALID_EMAIL'}, status = 400)
+        print(login_user_info['password'])
+        if bcrypt.checkpw(login_user_info['password'].encode('UTF-8'), user.password.encode('UTF-8')):
+            jwt_token = jwt.encode({'id':user.id}, my_settings.SIREN_SECRET['secret'], algorithm='HS256')
 
-#         user = User.objects.get(email=login_user_info['email'])
+            Login_check = Login(
+                user = User.objects.get(email=user.email),
+            )
+            Login_check.save()
 
-#         if bcrypt.checkpw(login_user_info['password'].encode('UTF-8'), user.password.encode('UTF-8')):
-
-#             now = datetime.now()
-#             str_date = now.strftime('%Y-%m-%d %H:%M:%S')
-#             Login_check = Login(
-#                 logined_at = datetime.now()
-#             jwt_token = jwt.encode({'id':user.id}, my_settings.SIREN_SECRET['secret'], algorithm='HS256')
-#             return JsonResponse({
-
-
+            return JsonResponse({
+                'access_token' : jwt_token.decode('UTF-8'),
+                'user_name'    : user.name
+            }, status = 200)
+        else:
+            return JsonResponse({'message': 'INVALID_PASSWORD'}, status = 400)
