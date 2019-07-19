@@ -1,8 +1,9 @@
-from account.views import AccountView, LoginView
-from django.views import View
+from account.views import *
 from django.urls import path
 
 urlpatterns = [
     path('',AccountView.as_view()),
-    path('/login', LoginView.as_view())
+    path('/login', LoginView.as_view()),
+    path('/employee', EmployeeSignup.as_view()),
+    path('/employee/login', EmployeeLogin.as_view()),
 ]
