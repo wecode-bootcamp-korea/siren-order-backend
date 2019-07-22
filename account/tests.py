@@ -118,8 +118,7 @@ class EmployeeTest(TestCase):
             phone_number  = '010-1234-1111',
             city          = '서울',
             gungu         = '강남구',
-            is_manager    = True,
-            is_leader     = False, 
+            grade         = '매니저',
             store         = store
         )
 
@@ -129,14 +128,14 @@ class EmployeeTest(TestCase):
     def test_employee_account_check(self):
         c = Client()
 
-        test     = {'name': '제니', 'employee_code':'00010131', 'password':'pass1234', 'phone_number':'010-1111-1234','city':'서울','gungu':'강남구', 'is_manager':True, 'is_leader':False, 'store_id':1}
+        test     = {'name': '제니', 'employee_code':'00010131', 'password':'pass1234', 'phone_number':'010-1111-1234','city':'서울','gungu':'강남구', 'grade':'매니저', 'store_id':1}
         response = c.post('/account/employee', json.dumps(test), content_type='applications/json')
         self.assertEqual(response.status_code, 200)
 
     def test_employee_account_code_check(self):
         c = Client()
 
-        test     = {'name': '나나', 'employee_code':'100011', 'password':'1234', 'phone_number':'01012345678','city':'서울','gungu':'강남구', 'is_manager':True, 'is_leader':False, 'store_id':1}
+        test     = {'name': '나나', 'employee_code':'100011', 'password':'1234', 'phone_number':'01012345678','city':'서울','gungu':'강남구', 'grade':'지점장', 'store_id':1}
         response = c.post('/account/employee', json.dumps(test), content_type="application/json")
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'EMPLOYEE_CODE_EXIST'})
