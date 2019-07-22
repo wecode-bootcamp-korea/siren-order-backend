@@ -19,6 +19,7 @@ class Store(models.Model):
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     gungu = models.ForeignKey(Gungu, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=50)
+    img_url = models.CharField(max_length=2500, null=True)
     address = models.CharField(max_length=200)
     telephone = models.CharField(max_length=20)
     fax_number = models.CharField(max_length=20)
