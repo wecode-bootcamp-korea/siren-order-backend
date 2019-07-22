@@ -1,4 +1,5 @@
 from django.db import models
+from store.models import Store
 
 class Social(models.Model):
     platform = models.CharField(max_length=30, default="normal")
@@ -21,9 +22,27 @@ class User(models.Model):
     class Meta:
         db_table = "user"
 
+class Employee(models.Model):
+    name          = models.CharField(max_length=50)
+    employee_code = models.CharField(max_length=100, unique=True) 
+    password      = models.CharField(max_length=100)
+    phone_number  = models.CharField(max_length=50)
+    is_manager    = models.BooleanField(default=True)
+    is_leader     = models.BooleanField(default=False)
+    city          = models.CharField(max_length=10, null=True)
+    gungu         = models.CharField(max_length=20, null=True)
+    store         = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True, default=None)
+    kakao_id      = models.CharField(max_length=50, null=True)
+    created_at    = models.DateTimeField(auto_now_add=True) 
+    updated_at    = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "employee"
+
 class Login(models.Model):
     logined_at = models.DateTimeField(auto_now=True)
-    user       = models.ForeignKey(User, on_delete=models.CASCADE)
+    user       = models.ForeignKey(User, on_delete=models.CASCADE, null=True)    
+    employee   = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
 
     class Meta:
         db_table = "login"

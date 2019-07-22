@@ -1,9 +1,9 @@
-import unittest
 import json
 import bcrypt
 from datetime import datetime
 
-from account.models import User,Social
+from account.models import User, Social, Employee
+from store.models import City, Gungu, Store 
 from django.test import TestCase
 from django.test import Client
 
@@ -83,5 +83,97 @@ class UserTest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'INVALID_PASSWORD'})
+
+class EmployeeTest(TestCase):
+    def setUp(self):
+        city = City.objects.create(
+                     id = 1,
+                   name = "서울",
+                   code = "01",
+               )
+        gungu = Gungu.objects.create(
+              id = 1,
+            code = "0101",
+            name = "강남구",
+            city = city
+        )
+        store = Store.objects.create(
+            id         = 1,
+            name       = '도산 가로수 길',
+            address    = '서울특별시 강남구 논현동 5번지 2층',
+            telephone  = '02-758-8429',
+            fax_number = '02-514-8429',
+            opened_at  = '20110907',
+            lat        = 37.5173623000,
+            lng        = 127.0232957000,
+            city       = city,
+            gungu      = gungu
+        )
+        bytes_pw = bytes('1234', 'utf-8')
+        hashed_pw = bcrypt.hashpw(bytes_pw, bcrypt.gensalt())
+        Employee.objects.create(
+            name          = '아이유',
+            employee_code = '100011',
+            password      = hashed_pw.decode('UTF-8'),
+            phone_number  = '010-1234-1111',
+            city          = '서울',
+            gungu         = '강남구',
+            is_manager    = True,
+            is_leader     = False, 
+            store         = store
+        )
+
+    def tearDown(self):
+        Employee.objects.filter(name='아이유').delete()
+
+    def test_employee_account_check(self):
+        c = Client()
+
+        test     = {'name': '제니', 'employee_code':'00010131', 'password':'pass1234', 'phone_number':'010-1111-1234','city':'서울','gungu':'강남구', 'is_manager':True, 'is_leader':False, 'store_id':1}
+        response = c.post('/account/employee', json.dumps(test), content_type='applications/json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_employee_account_code_check(self):
+        c = Client()
+
+        test     = {'name': '나나', 'employee_code':'100011', 'password':'1234', 'phone_number':'01012345678','city':'서울','gungu':'강남구', 'is_manager':True, 'is_leader':False, 'store_id':1}
+        response = c.post('/account/employee', json.dumps(test), content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'EMPLOYEE_CODE_EXIST'})
+
+    def test_employee_login_check(self):
+        c = Client()
+
+        test     = {'employee_code':'100011', 'password':'1234'}
+        employee = Employee.objects.get(employee_code=test['employee_code'])
+        response = c.post('/account/employee/login', json.dumps(test), content_type="application/json")
+        access_token = response.json()['access_token']
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+                {
+                    "access_token" : access_token,
+                    "name" : employee.name
+                })
+
+    def test_employee_login_code_check(self):
+        c = Client()
+
+        test     = {'employee_code':'00010301', 'password':'1234'}
+        response = c.post('/account/employee/login', json.dumps(test), content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'INVALID_EMPLOYEE'})
+
+    def test_user_login_password_check(self):
+        c = Client()
+
+        test     = {'employee_code':'100011', 'password':'12345'}
+        response = c.post('/account/employee/login', json.dumps(test), content_type="application/json")
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'message' : 'INVALID_PASSWORD'})
+
 
 
