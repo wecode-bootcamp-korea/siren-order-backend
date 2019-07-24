@@ -98,8 +98,7 @@ class EmployeeSignup(View):
                 city = data["city"],
                 gungu = data["gungu"],
                 phone_number = data["phone_number"],
-                is_manager = data["is_manager"],
-                is_leader = data["is_leader"],
+                grade = data["grade"],
                 store_id = data["store_id"]
             )
             new_employee.save()
