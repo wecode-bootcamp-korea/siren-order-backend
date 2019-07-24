@@ -18,7 +18,7 @@ for dosi in dosi_list['list']:
     print(dosi['sido_cd'])
     sido.append(dosi['sido_cd'])
     print(sido)
-   # City.objects.create(name=dosi['sido_nm'],code=dosi['sido_cd'])
+ #   City.objects.create(name=dosi['sido_nm'],code=dosi['sido_cd'])
 
 gu = {}
 def get_gugun(dosi_code):
@@ -34,7 +34,7 @@ def get_gugun(dosi_code):
         gungu.append(gugun['gugun_cd'])
         print(gugun['gugun_nm'],gugun['gugun_cd'],dosi_code)
     return gungu
-       # Gungu.objects.create(name=gugun['gugun_nm'],code=gugun['gugun_cd'],city_id=dosi_code)
+  #      Gungu.objects.create(name=gugun['gugun_nm'],code=gugun['gugun_cd'],city_id=dosi_code)
 
 if __name__ == '__main__':
     for i in sido:
@@ -61,13 +61,12 @@ def get_stores(dosi_code, gugun_code):
     store_list = res.json()
 
     for store in store_list['list']:
-        print(f"{store['addr']},{store['fax']},{store['open_dt']},{store['tel']},{store['lot']},{store['lat']},{store['s_name']}")
-        Store.objects.create(name=store['s_name'],address=store['addr'],telephone=store['tel'],fax_number=store['fax'],opened_at=store['open_dt'],lat=store['lat'],lng=store['lot'],city_id=city_code[0]["id"],gungu_id=gungu_code[0]["id"])
+        print(f"{store['addr']},{store['fax']},{store['open_dt']},{store['tel']},{store['lot']},{store['lat']},{store['s_name']},'https://image.istarbucks.co.kr'{store['defaultimage']}")
+        Store.objects.create(name=store['s_name'],address=store['addr'],telephone=store['tel'],fax_number=store['fax'],opened_at=store['open_dt'],lat=store['lat'],lng=store['lot'],city_id=city_code[0]["id"],gungu_id=gungu_code[0]["id"],img_url="https://image.istarbucks.co.kr"+store['defaultimage'])
 
 
 if __name__ == '__main__':
     for i in gu:
         for j in gu[i]:
             get_stores(i,j)
-          
-
+#    get_stores("01","0101")
