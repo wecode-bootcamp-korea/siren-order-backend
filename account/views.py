@@ -9,6 +9,7 @@ from django.views        import View
 from django.http         import JsonResponse
 from datetime            import datetime
 from sirenorder.settings import SECRET_KEY, EXP_TIME
+from account.utils       import login_required
 
 class AccountView(View):
 
@@ -68,7 +69,8 @@ class LoginView(View):
 
             return JsonResponse({
                     'access_token' : jwt_token.decode('UTF-8'),
-                    'user_name'    : user.name
+                    'user_name'    : user.name,
+                    'email'        : user.email
                 }, status = 200
             )
         else:
@@ -110,7 +112,7 @@ class EmployeeSignup(View):
 
 class EmployeeLogin(View):
 
-    def post(self, request):
+    def post(self, request): 
         login_employee = json.loads(request.body)
         siren_secret = SECRET_KEY
         exp_time = EXP_TIME
@@ -142,4 +144,70 @@ class EmployeeLogin(View):
                 {"message": "INVALID_PASSWORD"},
                 status=400
             )
-        
+
+class ChangePasswordView(View):
+    '''
+    유저가 패스워드 변경을 시도하면
+    jwt토큰과 유저의 원래 패스워드, 변경하고 싶은 패스워드를 받고
+    i)유저의 이메일이 기존에 가입되어 있는 유저인지(데코레이터가 확인),
+    ii)유저의 기존 패스워드가 동일한지 체크해서
+    맞다면 유저의 패스워드를 변경
+    기존 패스워드가 아닐 경우 > INVALID_PASSWORD
+    '''
+    @login_required
+    def post(self, request):
+        user_info = json.loads(request.body)
+        new_pw = user_info["new_password"]
+        current_pw = user_info["current_password"]
+
+        if bcrypt.checkpw(current_pw.encode("UTF-8"), request.user.password.encode("UTF-8")):
+
+            bytes_pw = bytes(new_pw, 'utf-8')
+            new_hashed_pw = bcrypt.hashpw(bytes_pw, bcrypt.gensalt())
+
+            request.user.password = new_hashed_pw.decode('UTF-8')
+            request.user.save()
+
+            return JsonResponse(
+                {
+                    "message" : "SUCCESS"
+                }, status = 200)
+
+        else:
+            return JsonResponse(
+                {
+                    "message" : "INVALID_PASSWORD"
+                }, status = 400)
+
+#class ChangePhoneNumberView(View):
+#
+#    @login_required
+#    def post(self, request):
+#        user_info = json.loads(request.body)
+#        current_ph = user_info["current_phone_number"]
+#        new_ph = user_info["new_phone_number"]
+#
+#        if bcrypt.checkpw(current_pw.encode("UTF-8"), request.user.password.encode("UTF-8")):
+#            request.user.phone_number = current_ph
+#            request.user.save()
+#
+#            return JsonResponse(
+#                {
+#                    "message" : "SUCCESS"
+#                }, status = 400)
+#
+#        else:
+#            return JsonResponse(
+#                {
+#                    "message" : "INVALID_PASSWORD"
+#                }, status = 400)
+#
+#class EmployeeSocialLoginView(View):
+#
+#    #@employee_login_required
+#    def get(self, request):
+#        kakao_token = request.headers["Authorization"]
+#        employee_token = reques.headers["
+#
+
+

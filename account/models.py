@@ -23,17 +23,17 @@ class User(models.Model):
         db_table = "user"
 
 class Employee(models.Model):
-    name          = models.CharField(max_length=50)
-    employee_code = models.CharField(max_length=100, unique=True) 
-    password      = models.CharField(max_length=100)
-    phone_number  = models.CharField(max_length=50)
-    grade         = models.CharField(max_length=30)
-    city          = models.CharField(max_length=10, null=True)
-    gungu         = models.CharField(max_length=20, null=True)
-    store         = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True, default=None)
-    kakao_id      = models.CharField(max_length=50, null=True)
-    created_at    = models.DateTimeField(auto_now_add=True) 
-    updated_at    = models.DateTimeField(auto_now=True)
+    name           = models.CharField(max_length=50)
+    employee_code  = models.CharField(max_length=100, unique=True) 
+    password       = models.CharField(max_length=100)
+    phone_number   = models.CharField(max_length=50)
+    grade          = models.CharField(max_length=30)
+    city           = models.CharField(max_length=10, null=True)
+    gungu          = models.CharField(max_length=20, null=True)
+    store          = models.ForeignKey(Store, on_delete=models.SET_NULL, null=True, default=None)
+    kakao_id       = models.CharField(max_length=50, null=True)
+    created_at     = models.DateTimeField(auto_now_add=True) 
+    updated_at     = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "employee"

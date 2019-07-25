@@ -107,7 +107,6 @@ class DrinksDetailView(View):
                     'description'  : hot_drink['description']
                 } for hot_drink in Hot.objects.filter(drink_id=drink_id).values()
             ]
-            return hot_list
 
             return hot_list
 

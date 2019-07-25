@@ -174,5 +174,10 @@ class EmployeeTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'INVALID_PASSWORD'})
 
+#    def test_user_change_password_check(self):
+#        c = Client()
+#
+#        test     = {'test@gmail.com'
+
 
 
