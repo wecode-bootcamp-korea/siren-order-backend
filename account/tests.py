@@ -3,10 +3,10 @@ import bcrypt
 from datetime import datetime
 
 from account.models import User, Social, Employee
-from store.models import City, Gungu, Store 
+from store.models import City, Gungu, Store
 from django.test import TestCase
 from django.test import Client
-
+from unittest.mock import patch, MagicMock
 
 class UserTest(TestCase):
     def setUp(self):
@@ -63,7 +63,8 @@ class UserTest(TestCase):
             response.json(),
                 {
                     "access_token" : access_token,
-                    "user_name"    : user.name
+                    "user_name"    : user.name,
+                    "email"        : user.email
                 })
 
     def test_user_login_email_check(self):
@@ -83,6 +84,18 @@ class UserTest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'INVALID_PASSWORD'})
+
+    def test_user_change_password_check(self):
+        c = Client()
+
+        test         = {'email' : 'test@gmail.com',"password":"1234"}
+        response     = c.post('/account/login', json.dumps(test), content_type='applications/json')
+        access_token = response.json()["access_token"]
+
+        test ={"current_password": "1234", "new_password" :"5678"}
+        response = c.post("/account/login/chpw", json.dumps(test), **{"HTTP_AUTHORIZATION":access_token, "content_type" : "application/json"})
+
+        self.assertEqual(response.status_code, 200)
 
 class EmployeeTest(TestCase):
     def setUp(self):
@@ -174,10 +187,34 @@ class EmployeeTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {'message' : 'INVALID_PASSWORD'})
 
-#    def test_user_change_password_check(self):
-#        c = Client()
-#
-#        test     = {'test@gmail.com'
+    @patch("account.views.requests")
+    def test_employee_kakao_account(self, mocked_requests):
+        c = Client()
 
+        class MockedResponse:
+            def json(self):
+                return {
+                    "id" : "12345",
+                    "properties" : {
+                        "nickname" : "아이유"
+                    }
+                }
 
+        mocked_requests.post = MagicMock(return_value = MockedResponse())
+
+        test = {
+            'employee_code':'1000111',
+            'password':'1234',
+            'nickname' : '아이유'
+        }
+
+        response = c.post("/account/employee/kakao", json.dumps(test), **{"HTTP_AUTHORIZATION":"1234","content_type" : "application/json"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json(),
+                {
+                    'message' : 'SUCCESS'
+                }
+        )
 
