@@ -17,6 +17,7 @@ with open(CSV_PATH, newline='') as csvfile:
             english_name = row['en_name'],
             img_url = row['img_url'],
             description = row['description'],
-            drink_id = row['drink_id']
+            product_id = row['drink_id'],
+            product_type_id = row['type']
             )
 

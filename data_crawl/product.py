@@ -6,13 +6,13 @@ import django
 django.setup()
 from product.models import *
 
-CSV_PATH = './drink.csv'
+CSV_PATH = './product.csv'
 
 with open(CSV_PATH, newline='') as csvfile:
     spamreader = csv.DictReader(csvfile)
     for row in spamreader:
         print(row)
-        Drinks.objects.create(
+        Product.objects.create(
             name = row['name'],
             english_name = row['en_name'],
             img_url = row['img_url'],
@@ -23,7 +23,15 @@ with open(CSV_PATH, newline='') as csvfile:
             venti_price = row['Venti'],
             description = row['description'],
             condition = row['condition'],
+            oz_price = row['oz'],
+            price = row['price'],
+            option = row['warming'],
+            volume = row['volume'],
+            purpose = row['option'],
+            size = row['size'],
+            weight = row['weight'],
+            product_type_id = row['type'], 
             section_id = row['section_id'],
-            oz_price = row['oz']
+            category_id = row['category_id']
             )
 
