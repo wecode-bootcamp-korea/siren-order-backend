@@ -18,7 +18,7 @@ for dosi in dosi_list['list']:
     print(dosi['sido_cd'])
     sido.append(dosi['sido_cd'])
     print(sido)
- #   City.objects.create(name=dosi['sido_nm'],code=dosi['sido_cd'])
+#    City.objects.create(name=dosi['sido_nm'],code=dosi['sido_cd'])
 
 gu = {}
 def get_gugun(dosi_code):
@@ -34,7 +34,7 @@ def get_gugun(dosi_code):
         gungu.append(gugun['gugun_cd'])
         print(gugun['gugun_nm'],gugun['gugun_cd'],dosi_code)
     return gungu
-  #      Gungu.objects.create(name=gugun['gugun_nm'],code=gugun['gugun_cd'],city_id=dosi_code)
+ #       Gungu.objects.create(name=gugun['gugun_nm'],code=gugun['gugun_cd'],city_id=dosi_code)
 
 if __name__ == '__main__':
     for i in sido:

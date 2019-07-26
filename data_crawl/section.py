@@ -6,20 +6,14 @@ import django
 django.setup()
 from product.models import *
 
-CSV_PATH = './cake.csv'
+CSV_PATH = './section.csv'
 
 with open(CSV_PATH, newline='') as csvfile:
     spamreader = csv.DictReader(csvfile)
     for row in spamreader:
         print(row)
-        Cake.objects.create(
+        Section.objects.create(
             name = row['name'],
-            english_name = row['en_name'],
-            img_url = row['img_url'],
-            price = row['price'],
-            size = row['size'],
-            weight = row['weight'],
-            description = row['description'],
-            category_id = row['category_id'],
+            category_id = row['category_id']
             )
 

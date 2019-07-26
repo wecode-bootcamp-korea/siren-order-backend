@@ -1,5 +1,5 @@
-from product.models import Categories,Section, Drinks, Foods, Stuff, Hot, Cake
-from django.http    import JsonResponse, HttpResponse
+from product.models import Categories,Section, Product
+from django.http    import JsonResponse
 from django.views   import View
 
 class TotalMenuListView(View):
