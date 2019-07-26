@@ -9,7 +9,7 @@ from django.views        import View
 from django.http         import JsonResponse
 from datetime            import datetime
 from sirenorder.settings import SECRET_KEY, EXP_TIME
-from account.utils       import login_required
+from account.utils       import login_required, employee_login_required
 
 class AccountView(View):
 
@@ -136,7 +136,7 @@ class EmployeeLogin(View):
             return JsonResponse(
                         {
                             "access_token" : encoded_jwt.decode("utf-8"),
-                            "name"         : employee_data.name
+                            "name"         : employee_data.name,
                          }
                      )
         else:
@@ -202,12 +202,47 @@ class ChangePasswordView(View):
 #                    "message" : "INVALID_PASSWORD"
 #                }, status = 400)
 #
-#class EmployeeSocialLoginView(View):
-#
-#    #@employee_login_required
-#    def get(self, request):
-#        kakao_token = request.headers["Authorization"]
-#        employee_token = reques.headers["
-#
+
+class EmployeeSocialLoginView(View):
+
+    #@employee_login_required
+    def post(self, request):
+
+        access_token = request.headers["Authorization"]
+        headers      = ({'Authorization' : f"Bearer {access_token}"})
+        url          = "https://kapi.kakao.com/v1/user/me"
+        response     = requests.post(url, headers=headers, timeout=3)
+        employee     = response.json()
+        exp_time = EXP_TIME
 
 
+        if Employee.objects.filter(kakao_id = employee["id"]).exists():
+            exp_time = EXP_TIME
+            siren_secret = SECRET_KEY
+
+            employee_data = Employee.objects.get(kakao_id = employee["id"])
+            encoded_jwt = jwt.encode({"employee_id":employee_data.id, 'exp':exp_time}, siren_secret, algorithm="HS256")
+
+            login_check = Login(
+                employee = Employee.objects.get(employee_code=employee_data.employee_code)
+            )
+            login_check.save()
+
+            return JsonResponse(
+                {
+                    'access_token' : encoded_jwt.decode('UTF-8'),
+                    'name'         : employee_data.name,
+                    'message'      : 'SUCCESS'
+                }, status = 200
+            )
+
+        else:
+            employee_info = Employee.objects.get(name=employee['properties']['nickname'])
+            employee_info.kakao_id = employee["id"]
+            employee_info.save()
+
+            return JsonResponse(
+                {
+                    "message": "SUCCESS"
+                }, status = 200
+            )
