@@ -13,7 +13,7 @@ lazy-object-proxy==1.4.1
 libarchive-c==2.8
 mccabe==0.6.1
 mysql-connector-python==8.0.16
-protobuf==3.8.0
+protobuf==3.15.0
 pycosat==0.6.3
 pycparser==2.19
 PyJWT==1.7.1
